@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Federated Time-Lock Encryption Key API",
+    "title": "Federated Time-Lock Encryption",
     "version": "1.0",
     "license": {
       "identifier": "MIT",
@@ -11,9 +11,18 @@
       "name": "Mettle X"
     },
     "description": "Federated Time-Lock Encryption Key API",
-    "summary": "Federated Time-Lock Encryption Key API"
+    "summary": "Federated Time-Lock Encryption"
   },
-  "servers": [],
+  "servers": [
+    {
+      "url": "https://stoplight.io/mocks/mettlex/federated-time-lock-encryption/35978772",
+      "description": "Mock Server #1"
+    },
+    {
+      "url": "http://127.0.0.1:8787",
+      "description": "Localhost"
+    }
+  ],
   "paths": {
     "/key/store": {
       "post": {
@@ -44,8 +53,8 @@
                     }
                   },
                   "additionalProperties": false,
-                  "minProperties": 6,
-                  "maxProperties": 6,
+                  "minProperties": 7,
+                  "maxProperties": 7,
                   "properties": {
                     "random_bytes": {
                       "type": "string",
@@ -71,6 +80,12 @@
                       "example": "0xd0c139b3a26a87faf6dea4afdaf78a8c",
                       "description": "A randomly generated salt which is used to derive a crypto key from the first secret key"
                     },
+                    "key_derivation_iterations": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100000,
+                      "example": 10000
+                    },
                     "hash_algorithm": {
                       "type": "string",
                       "minLength": 1,
@@ -89,6 +104,7 @@
                     "random_bytes_digest",
                     "key_derivation_algorithom",
                     "key_derivation_salt",
+                    "key_derivation_iterations",
                     "hash_algorithm",
                     "encryption_algorithm"
                   ]
@@ -100,6 +116,7 @@
                       "random_bytes_digest": "0x8d50becbe445893e6ba2097d32ad297db866c8878d4456ac47ba06005cf7e9c9075701f3e4ec0d9552d36eae75609a6d6a84a94813e9925be145ebb1905c641f",
                       "key_derivation_algorithom": "PBKDF2",
                       "key_derivation_salt": "0xd0c139b3a26a87faf6dea4afdaf78a8c",
+                      "key_derivation_iterations": 10000,
                       "hash_algorithm": "SHA-512",
                       "encryption_algorithm": "AES-GCM"
                     }
@@ -109,7 +126,26 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "x-examples": {
+                    "example-1": {
+                      "error": "encrypted second secret key did not match"
+                    }
+                  },
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -184,7 +220,10 @@
           }
         ],
         "x-internal": false,
-        "description": "Alice's first request to the key server to store an encrypted cipher text of the second secret key and the duration to lock the key after the first recovery request from Bob"
+        "description": "Alice's first request to the key server to store an encrypted cipher text of the second secret key and the duration to lock the key after the first recovery request from Bob",
+        "tags": [
+          "KEY-API"
+        ]
       }
     },
     "/key/read": {
@@ -253,7 +292,26 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "x-examples": {
+                    "example-1": {
+                      "error": "encrypted second secret key did not match"
+                    }
+                  },
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -276,8 +334,8 @@
                   }
                 },
                 "additionalProperties": false,
-                "minProperties": 8,
-                "maxProperties": 8,
+                "minProperties": 9,
+                "maxProperties": 9,
                 "properties": {
                   "first_secret_key": {
                     "type": "string",
@@ -311,6 +369,12 @@
                     "minLength": 16,
                     "description": "Random salt used in the key derivation, provided by the key server in response to the first store key request"
                   },
+                  "key_derivation_iterations": {
+                    "type": "integer",
+                    "example": 10000,
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
                   "hash_algorithm": {
                     "type": "string",
                     "minLength": 1,
@@ -329,6 +393,7 @@
                   "random_bytes_digest",
                   "key_derivation_algorithom",
                   "key_derivation_salt",
+                  "key_derivation_iterations",
                   "hash_algorithm",
                   "encryption_algorithm"
                 ]
@@ -342,6 +407,7 @@
                     "random_bytes_digest": "0x8d50becbe445893e6ba2097d32ad297db866c8878d4456ac47ba06005cf7e9c9075701f3e4ec0d9552d36eae75609a6d6a84a94813e9925be145ebb1905c641f",
                     "key_derivation_algorithom": "PBKDF2",
                     "key_derivation_salt": "0xd0c139b3a26a87faf6dea4afdaf78a8c",
+                    "key_derivation_iterations": 10000,
                     "hash_algorithm": "SHA-512",
                     "encryption_algorithm": "AES-GCM"
                   }
@@ -362,7 +428,10 @@
           }
         ],
         "x-internal": false,
-        "description": "Alice's read request to the key server to verify the decryption of the second secret key"
+        "description": "Alice's read request to the key server to verify the decryption of the second secret key",
+        "tags": [
+          "KEY-API"
+        ]
       },
       "parameters": []
     },
@@ -483,7 +552,26 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "x-examples": {
+                    "example-1": {
+                      "error": "encrypted second secret key did not match"
+                    }
+                  },
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -545,16 +633,232 @@
                   "random_bytes_digest",
                   "hash_algorithm"
                 ]
+              },
+              "examples": {
+                "example-1": {
+                  "value": {
+                    "first_secret_key": "@rY[av$bvm5A%!Zp",
+                    "random_bytes": "0x0b1747182e57b4ae3c76030f",
+                    "random_bytes_digest": "0x8d50becbe445893e6ba2097d32ad297db866c8878d4456ac47ba06005cf7e9c9075701f3e4ec0d9552d36eae75609a6d6a84a94813e9925be145ebb1905c641f",
+                    "hash_algorithm": "SHA-512"
+                  }
+                }
               }
             }
           },
           "description": "Request Body sent by Bob"
-        }
+        },
+        "tags": [
+          "KEY-API"
+        ]
+      }
+    },
+    "/key/delete": {
+      "post": {
+        "summary": "Delete Key",
+        "operationId": "key-delete",
+        "responses": {
+          "200": {
+            "description": "Successful response sends `deleted` as boolean `true`",
+            "headers": {
+              "Content-Type": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "application/json"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "",
+                  "x-examples": {
+                    "example-1": {
+                      "deleted": true,
+                      "f": "0x397118fdac8d83ad98813c50759c85b8c47565d8268bf10da483153b747a74743a58a90e85aa9f705ce6984ffc128db567489817e4092d050d8a1cc596ddc119",
+                      "d": 10,
+                      "e": "0x1a76ce469a6e452e104018a91b7dccdb55a541"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "properties": {
+                    "deleted": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "f": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "d": {
+                      "type": "number"
+                    },
+                    "e": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "deleted",
+                    "f",
+                    "d",
+                    "e"
+                  ]
+                },
+                "examples": {
+                  "example-1-200": {
+                    "value": {
+                      "deleted": true,
+                      "f": "0x397118fdac8d83ad98813c50759c85b8c47565d8268bf10da483153b747a74743a58a90e85aa9f705ce6984ffc128db567489817e4092d050d8a1cc596ddc119",
+                      "d": 10,
+                      "e": "0x1a76ce469a6e452e104018a91b7dccdb55a541"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "x-examples": {
+                    "example-1": {
+                      "error": "encrypted second secret key did not match"
+                    }
+                  },
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "description": "Alice can delete the keys at anytime",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "Content-type",
+            "description": "application/json"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "",
+                "x-examples": {
+                  "example-1": {
+                    "first_secret_key": "ABC",
+                    "second_secret_key": "DEF",
+                    "random_bytes": "0xba48c283db9aade293784e2f84a680c35b8ddcf29db61d6d19fcc9cdcf027154ba878165af8da347b1f010439906297e891d573f9b5ff236171462383dcad89821581cfe50d1440e7c7b880449c7639fba1bea06732b171b5a7935d2692791a180cf97dbd58d093b222684340b7dd878dd8f0e28ef909cb1a139d91d895f96ab1459d385753f033a2083ad3c327065bb6afe337551712d82cacf8d825d3ad58ec315d317eb354fb482be5594135a997959846fd97bbe03f8794eaca7ee8a67f1b30ce055e336fd21834899233a81338cbcef6fd20aed68703a9574c7289812702666f3e83d31b5a13bcc40cdb9a8cdf3fa730e684c27a9ca62269892ca3d47d536a19d55e87d3d55ee81110c010590abf902e4b84e17a5e9c9dd8e1a7f26aa79ff7598e155a5e7e077bbcc05a3d2c962b9cedad6545d9a5f4cae13a761922719b3b004acc838acd2c83722309c83c1ef0e384adc24f9ed262f2ba51026cc618d0431d00235def93cf55ded5f7c05403b735496c618aa3497251edb8411ada5f64dfff5892a2a8d4a49c5a91723dfbfbc3b5b2534ec307eb3e020bab002c36dc8d8f1ba61d6561942596eaff5267ed77103ca832d45e7d90cba16235b3b02c4bc261f1d1c9a45558137283df95a87c4b2ba9fed6c858fa1327b5b011edb4907a2324ecd288f2924675c8799319546d5937f06a1342b3c39a32ab459dc3014f9d1",
+                    "random_bytes_digest": "0x88c4fd862e6880f27cc110f69f12bb7f221ce32367d3ad0c66bda9f41da0a3c49c49b7f9dc2a3c34087f60ad71ba8fa98d560f5220c521132eb73be2f4609842",
+                    "key_derivation_algorithom": "PBKDF2",
+                    "key_derivation_salt": "0x88b9c6597c89c6ee3be96c026895d2def664371855c9d4a35376d93795ea5f4c983a81a7e3f9c939313db5a5624255c56db48b369c20edd0483251043829f7e21f75da1055747411b591a4ec2d7f3f167b121ba1b366e0581363a42fbc3f44087258d67e16ceeda5777d615acdf31a3f86a6d32ac06f98b6c7a9f61c8a2648ebc078faeb1c12d3664956d29c4866ae3b0a0ed709258c462f721d78c617b90edd287fa02882f5834c20832c063af26bafcc379190512247195a05f4e643be8ca77f74de764f8d144d186cbfa99fab3ebef8d95f318a5544af1539a723e9605353d007e3f9fd1071b3f4ef1790b4ade422eaff5a0151653d050b2b2fe6bca576a29e1806cc73452b71fea196e87c86dec1666a16d099f9c239f184ce8aaa661bc88e3d18f48be3d7ee9ed244c61258c42971fa7a828e2e46b99d8ff68581b586777495e032ef12267b878572361026d6d5ccd41c9dbc45c6318cc44f19ad3f077fe95e2124b9960e00c65e1ba892c571368c80dcec9bb78ab5bfcc432c3aea39772a8df73bfb170560dc98e715a9ef3b10663af39f080b02b8431d3f41325f31e74467a9d0ec68ae5da913dc95c4695abbf6e6bf7e4e931b9552a7bed3a24f3c08bdeb2e0bf93a92b764e70e86e87eac1b606e4dbb9ab1469c8588266c72d0cc265b93b735fde90d75f29daa101140ec9ae4f978596be66913798e7ab4e7ce49d6",
+                    "key_derivation_iterations": 100000,
+                    "hash_algorithm": "SHA-512",
+                    "encryption_algorithm": "AES-GCM"
+                  }
+                },
+                "additionalProperties": false,
+                "properties": {
+                  "first_secret_key": {
+                    "type": "string",
+                    "minLength": 16
+                  },
+                  "second_secret_key": {
+                    "type": "string",
+                    "minLength": 16
+                  },
+                  "random_bytes": {
+                    "type": "string",
+                    "minLength": 16
+                  },
+                  "random_bytes_digest": {
+                    "type": "string",
+                    "minLength": 16
+                  },
+                  "key_derivation_algorithom": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "key_derivation_salt": {
+                    "type": "string",
+                    "minLength": 16
+                  },
+                  "key_derivation_iterations": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "hash_algorithm": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "encryption_algorithm": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "first_secret_key",
+                  "second_secret_key",
+                  "random_bytes",
+                  "random_bytes_digest",
+                  "key_derivation_algorithom",
+                  "key_derivation_salt",
+                  "key_derivation_iterations",
+                  "hash_algorithm",
+                  "encryption_algorithm"
+                ]
+              },
+              "examples": {
+                "example-1": {
+                  "value": {
+                    "first_secret_key": "PUT_LONG_SECRET_KEY_HERE",
+                    "second_secret_key": "PUT_ANOTHER_LONG_SECRET_KEY_HERE",
+                    "random_bytes": "0xba48c283db9aade293784e2f84a680c35b8ddcf29db61d6d19fcc9cdcf027154ba878165af8da347b1f010439906297e891d5",
+                    "random_bytes_digest": "0x88c4fd862e6880f27cc110f69f12bb7f221ce32367d3ad0c66bda9f41da0a3c49c49b7f9dc2a3c34087f60ad71ba8fa98d560f5220c521132eb73be2f4609842",
+                    "key_derivation_algorithom": "PBKDF2",
+                    "key_derivation_salt": "0x88b9c6597c89c6ee3be96c026895d2def664371855c9d4a35376d93795ea5f4c983a81a7e3f9c939313db5a5624255c56db48b369c20edd",
+                    "key_derivation_iterations": 100000,
+                    "hash_algorithm": "SHA-512",
+                    "encryption_algorithm": "AES-GCM"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Request Body sent by Alice"
+        },
+        "tags": [
+          "KEY-API"
+        ]
       }
     }
   },
   "components": {
     "schemas": {},
     "securitySchemes": {}
-  }
+  },
+  "tags": [
+    {
+      "name": "KEY-API"
+    }
+  ]
 }
