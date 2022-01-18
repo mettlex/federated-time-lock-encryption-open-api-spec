@@ -34,9 +34,12 @@
             "headers": {
               "Content-Type": {
                 "schema": {
-                  "type": "string"
-                },
-                "description": "application/json"
+                  "type": "string",
+                  "enum": [
+                    "application/json"
+                  ],
+                  "example": "application/json"
+                }
               }
             },
             "content": {
@@ -212,11 +215,15 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "application/json"
+              ],
+              "example": "application/json"
             },
             "in": "header",
             "name": "Content-Type",
-            "description": "application/json"
+            "required": true
           }
         ],
         "x-internal": false,
@@ -236,9 +243,12 @@
             "headers": {
               "Content-Type": {
                 "schema": {
-                  "type": "string"
-                },
-                "description": "application/json"
+                  "type": "string",
+                  "enum": [
+                    "application/json"
+                  ],
+                  "example": "application/json"
+                }
               }
             },
             "content": {
@@ -420,11 +430,15 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "application/json"
+              ],
+              "example": "application/json"
             },
             "in": "header",
             "name": "Content-Type",
-            "description": "application/json"
+            "required": true
           }
         ],
         "x-internal": false,
@@ -445,9 +459,12 @@
             "headers": {
               "Content-Type": {
                 "schema": {
-                  "type": "string"
-                },
-                "description": "application/json"
+                  "type": "string",
+                  "enum": [
+                    "application/json"
+                  ],
+                  "example": "application/json"
+                }
               }
             },
             "content": {
@@ -581,11 +598,15 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "application/json"
+              ],
+              "example": "application/json"
             },
             "in": "header",
             "name": "Content-Type",
-            "description": "application/json"
+            "required": true
           }
         ],
         "requestBody": {
@@ -663,9 +684,12 @@
             "headers": {
               "Content-Type": {
                 "schema": {
-                  "type": "string"
-                },
-                "description": "application/json"
+                  "type": "string",
+                  "enum": [
+                    "application/json"
+                  ],
+                  "example": "application/json"
+                }
               }
             },
             "content": {
@@ -749,11 +773,15 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "application/json"
+              ],
+              "example": "application/json"
             },
             "in": "header",
             "name": "Content-type",
-            "description": "application/json"
+            "required": true
           }
         ],
         "requestBody": {
@@ -848,6 +876,202 @@
         },
         "tags": [
           "KEY-API"
+        ]
+      }
+    },
+    "/key/status": {
+      "post": {
+        "summary": "Get Key Status",
+        "operationId": "key-status",
+        "responses": {
+          "200": {
+            "description": "Successful response sends one of these statuses: `LOCKED`, `UNLOCKING` or `UNLOCKED`",
+            "headers": {
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "application/json"
+                  ],
+                  "example": "application/json"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "maxProperties": 1,
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "LOCKED",
+                        "UNLOCKING",
+                        "UNLOCKED"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "examples": {
+                  "example-1-200": {
+                    "value": {
+                      "status": "LOCKED"
+                    }
+                  },
+                  "example-2-200": {
+                    "value": {
+                      "status": "UNLOCKING"
+                    }
+                  },
+                  "example-3-200": {
+                    "value": {
+                      "status": "UNLOCKED"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "error": "error message here"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "x-examples": {
+                    "example-1": {
+                      "error": "error message here"
+                    }
+                  }
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "error": "error message here"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "x-examples": {
+                    "example-1": {
+                      "error": "error message here"
+                    }
+                  }
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "error": "error message here"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "KEY-API"
+        ],
+        "description": "This endpoint is useful for notification services.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "maxProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                  "random_bytes_digest": {
+                    "type": "string",
+                    "minLength": 16,
+                    "description": "Digest of the random bytes received from `/key/store`"
+                  }
+                },
+                "required": [
+                  "random_bytes_digest"
+                ]
+              },
+              "examples": {
+                "example-1": {
+                  "value": {
+                    "random_bytes_digest": "0x8d50becbe445893e6ba2097d32ad297db866c8878d4456ac47ba06005cf7e9c9075701f3e4ec0d9552d36eae75609a6d6a84a94813e9925be145ebb1905c641f"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Request Body sent by any notification service to check the status"
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "application/json",
+              "enum": [
+                "application/json"
+              ]
+            },
+            "in": "header",
+            "name": "Content-Type",
+            "required": true
+          }
         ]
       }
     }
